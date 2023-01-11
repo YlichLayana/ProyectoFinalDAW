@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="/dashboard1:: head_dashboard"></head>
+
+<body>
+	<div th:fragment="contenido">
+		
+		<div class="row justify-content-center align-items-center">
+			<!--Mensaje de Error si no se puede eliminar y cancelar una cita de un servicio-->
+			<div th:if="${errorMessageCancelaCita}" class="alert alert-danger text-center" role="alert"
+				style="width: 35rem">
+				<p th:text="${errorMessageCancelaCita}"></p>
+			</div>
+			<!--Mensaje de Succes si la cita se cancela y elimina correctamente de un servicio-->
+			<div th:if="${successMessageCancelaCita}" class="alert alert-info text-center" role="alert"
+				style="width: 35rem">
+				<p th:text="${successMessageCancelaCita}"></p>
+			</div>
+			<!--Mensaje si el usuario aún no tiene citas solicitadas-->
+			<div th:if="${messageCitasAgendadas}" class="alert alert-warning text-center" role="alert" style="width: 35rem">
+				<p th:text="${messageCitasAgendadas}"></p>
+			</div>
+			<div class="card border border-info mb-3  rounded-3" style="width: 75rem">
+				<div class="card-header text-center">
+					<h3 class="text-primary">LISTADO DE CITAS </h3>
+				</div>
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-striped table-hover">
+							<thead class="table-info">
+								<tr class="text-primary">
+									<th scope="col">ID</th>
+									<th scope="col">FECHA</th>
+									<th scope="col">HORA</th>
+									<th scope="col">SERVICIO</th>
+									<th scope="col">PROVEEDOR</th>
+									<th scope="col">MÓVIL</th>
+									<th scope="col">PRECIO</th>
+									<th scope="col">ESTADO</th>
+									<th scope="col" colspan="2">ACCIONES / CITAS</th>
+								</tr>
+							</thead>
+							<tbody class="table-group-divider">
+								
+								<tr th:each="cita : ${citasAgendadas}">
+									<th class="text-primary fs-6" scope="row" th:text="${cita.getId()}"></th>
+									<td class="fs-6" th:text="${cita.getFecha()}"></td>
+									<td class="fs-6" th:text="${cita.getHora()}"></td>
+									<td class="fs-6" th:text="${cita.getServicioOfrecido().getCategoriaServicio().getNombre()}">
+									</td>
+									<td
+										class="fs-6" th:text="${cita.getServicioOfrecido().getProveedor().getUsuario().usuarioFullNombre()}">
+									</td>
+									<td class="fs-6" th:text="${cita.getServicioOfrecido().getProveedor().getUsuario().getMovil()}">
+									</td>
+									<td class="fs-6" th:text="${cita.getServicioOfrecido().getPrecio()}"></td>
+									
+									<td>
+										<div th:class="${cita.getEstado() == 'PENDIENTE' ? 'p-2 bg-primary bg-opacity-10 border border-primary rounded text-center' : 
+											cita.getEstado() == 'PROCESADA' ? 'p-2 bg-success bg-opacity-10 border border-success rounded text-center' : 
+											cita.getEstado() == 'COMPLETADA' ? 'p-2 bg-warning bg-opacity-10 border border-warning rounded text-center' : 
+											'p-2 bg-danger bg-opacity-10 border border-danger rounded text-center'}">
+										    [[${cita.getEstado()}]]
+										</div>
+									</td>
+									<td>
+										<!-- Button trigger modal -->
+										<button type="button" class="link-modificar btn btn-outline-primary"  th:attr="data-id-cita=${cita.getId()}" 
+										 data-bs-toggle="modal" data-bs-target="#staticBackdrop">Modificar</button>
+									</td>
+									<td>
+										
+										<form action="cancelarCita" th:action="@{/cita/cancelar}" th:object="${cita}"
+											method="post">
+											<input type="hidden" name="idCita" th:value="*{id}" />
+											<input type="hidden" name="estado" th:value="*{estado}" />
+											<button type="submit" class="btn btn-outline-danger">Cancelar</button>
+										</form>
+									</td>
+								</tr>
+								
+							</tbody>
+						</table>
+					</div>
+					
+				</div>
+				<div class="card-footer text-center">
+					<div th:if="${citasAgendadas}">
+						<!--Paginación-->
+						<nav aria-label="Page navigation example">
+							<ul class="pagination justify-content-center mt-1">
+				
+								<li class="page-item" th:class="${citasAgendadas.isFirst()} ? 'disabled' : ''">
+									<a class="page-link" th:href="@{/citas/agendadas(pagina=${paginaActual - 1})}"
+										tabindex="-1">Anterior</a>
+								</li>
+				
+								<li class="page-item" th:each="numero : ${#numbers.sequence(0, totalPaginas-1)}"
+									th:class="${numero == paginaActual-1} ? 'active' : ''">
+									<a class="page-link" th:href="@{/citas/agendadas(pagina=${numero+1})}" th:text="${numero+1}"></a>
+								</li>
+				
+								<li class="page-item" th:class="${citasAgendadas.isLast()} ? 'disabled' : ''">
+									<a class="page-link" th:href="@{/citas/agendadas(pagina=${paginaActual + 1})}">Siguiente</a>
+								</li>
+				
+							</ul>
+						</nav>
+						<!--Fin Paginación-->
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Incio Modal editar cita-->
+		<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+			aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="staticBackdropLabel">Modificar Fecha/Hora Cita</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						
+						<form id="form-modificar-cita" class="row g-3" th:action="@{/cita/editar}"
+							method="post">
+						
+							<div class="col-6">
+								<label for="inputServicioId" class="form-label">Id Servicio</label>
+								<input type="number" class="form-control" name="id" readonly>
+							</div>
+						
+							<div class="col-6">
+								<label for="inputServicioNombre" class="form-label">Nombre Servicio</label>
+								<input type="text" class="form-control" name="categoria" readonly>
+							</div>
+						
+							<div class="col-6">
+								<label for="inputProveedorNombre" class="form-label">Proveedor</label>
+								<input type="text" class="form-control" name="proveedor" readonly>
+							</div>
+						
+							<div class="col-6">
+								<label for="inputProveedorMovil" class="form-label">Tel-Movil</label>
+								<input type="text" class="form-control" name="movil" readonly>
+							</div>
+						
+							<div class="col-md-6">
+								<label for="fechaCita" class="form-label">Fecha</label>
+								<input type="date" class="form-control" name="fechaEditar" required>
+							</div>
+						
+							<div class="col-md-6">
+								<label for="HoraCita" class="form-label">Hora</label>
+								<input type="time" class="form-control" name="horaEditar" required>
+							</div>
+						
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="submit" form="form-modificar-cita" class="btn btn-primary">Aceptar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Fin Modal editar cita-->
+		<script>
+			const linksModificar = document.querySelectorAll('.link-modificar');
+
+			linksModificar.forEach(link => {
+				link.addEventListener('click', event => {
+					event.preventDefault();
+
+					// Obtener el valor del atributo "data-id-cita" del enlace
+					const idCita = link.getAttribute('data-id-cita');
+					console.log(idCita);
+					// Construir la URL del método "/cita/agendadaEdit" con el ID de la cita
+					const url = '/cita/agendada?idCita=' + idCita;
+					console.log(url); // imprime la URL en la consola para verificar que sea correcta
+					fetch(url)
+				      .then(response => response.json())
+				      .then(data => {
+						 console.log(data);  
+						 document.querySelector('#form-modificar-cita input[name="id"]').value = data.id;
+						 document.querySelector('#form-modificar-cita input[name="categoria"]').value = data.servicio;
+						 document.querySelector('#form-modificar-cita input[name="proveedor"]').value = data.proveedor;
+						 document.querySelector('#form-modificar-cita input[name="movil"]').value = data.movil;
+						 document.querySelector('#form-modificar-cita input[name="fechaEditar"]').value = data.fecha;
+						 document.querySelector('#form-modificar-cita input[name="horaEditar"]').value = data.hora;
+					})
+				});
+			});
+		</script>
+	</div>
+</body>
+
+</html>

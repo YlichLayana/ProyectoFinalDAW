@@ -1,0 +1,10 @@
+/* Show it is fixed to the top */
+body {
+  min-height: 70rem;
+  padding-top: 4.5rem;
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+

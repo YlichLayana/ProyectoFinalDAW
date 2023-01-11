@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="/dashboard1:: head_dashboard"></head>
+
+<body>
+	<div th:fragment="contenido" >
+
+		<div class="row justify-content-center align-items-center">
+			<!--Mensaje de Error si no encuentra un servicio-->
+			<div th:if="${errorMessage}" class="alert alert-warning text-center" role="alert" style="width: 35rem">
+				<p th:text="${errorMessage}"></p>
+			</div>
+
+			<!--Mensaje de Exito si creo una cita correctamente-->
+			<div th:if="${mesajeExito}" class="alert alert-info text-center" role="alert" style="width: 35rem">
+				<p th:text="${mesajeExito}"></p>
+			</div>
+
+			<!--Mensaje de Error si no se creo una cita correctamente-->
+			<div th:if="${mesajeError}" class="alert alert-danger text-center" role="alert" style="width: 35rem">
+				<p th:text="${mesajeError}"></p>
+			</div>
+
+			<!--Card de Servicio Agendado-->
+			<div th:each="servicio : ${servicio}" class="col-auto px-5 ">
+				<div class="card border border-info rounded-3" style="width: 35rem">
+					<h5 id="servicio-nombre" class="card-header" th:text="${servicio.categoriaServicio.nombre}">
+						Categoría</h5>
+					<div class="card-body">
+						<h5 id="proveedor-nombre" class="card-title"><i
+								class="fas fa-user me-2 primary-text border rounded-full secondary-bg p-3"></i>
+							<span th:text="${servicio.proveedor.usuario.usuarioFullNombre()}">Nombre del
+								proveedor</span>
+						</h5>
+						<p class="card-title" th:text="'Tel-Móvil: ' + ${servicio.proveedor.usuario.movil}">Tel-Móvil
+						</p>
+						<p class="card-title" th:text="'Especialidad: ' + ${servicio.proveedor.especialidad}">
+							Especialidad</p>
+						<p class="card-title" th:text="'Precio: $' + ${servicio.precio}">Precio</p>
+						<p class="card-title" th:text="'Turno: ' + ${servicio.turno}">Turno</p>
+						<p class="card-text" th:text="'Atención: ' + ${servicio.tipoServicio}">Atención</p>
+						
+						<div th:if="${mesajeError}">
+							<button type="button" class="link-agendar btn btn-primary" th:data-servicio-id="${servicio.id}"
+								th:data-bs-toggle="modal" data-bs-target="#agendarServicio">Agendar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--Fin Card de Servicio Agendado-->
+		</div>
+
+
+		<div id="resultados" class="card-columns">
+			<!-- Aquí se mostrarán las Cards de los resultados de la búsqueda -->
+			<div class="row row-cols-1 row-cols-md-3 g-4">
+				<div th:each="servicio : ${servicios}">
+					<div class="card border border-info rounded-3">
+						<h5 id="servicio-nombre" class="card-header" th:text="${servicio.categoriaServicio.nombre}">
+							Categoría</h5>
+						<div class="card-body">
+							<h5 id="proveedor-nombre" class="card-title"><i
+									class="fas fa-user me-2 primary-text border rounded-full secondary-bg p-3"></i>
+								<span th:text="${servicio.proveedor.usuario.usuarioFullNombre()}">Nombre del
+									proveedor</span>
+							</h5>
+							<p class="card-title" th:text="'Tel-Móvil: ' + ${servicio.proveedor.usuario.movil}">
+								Tel-Móvil</p>
+							<p class="card-title" th:text="'Especialidad: ' + ${servicio.proveedor.especialidad}">
+								Especialidad</p>
+							<p class="card-title" th:text="'Precio: $' + ${servicio.precio}">Precio</p>
+							<p class="card-title" th:text="'Turno: ' + ${servicio.turno}">Turno</p>
+							<p class="card-text" th:text="'Atención: ' + ${servicio.tipoServicio}">Atención</p>
+							<button type="button" class="link-agendar btn btn-primary"
+								th:data-servicio-id="${servicio.id}" th:data-bs-toggle="modal"
+								data-bs-target="#agendarServicio">Agendar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Hasta Aquí se mostrarán las Cards de los resultados de la búsqueda -->
+		</div>
+
+		<!-- Paginación-->
+		<div th:if="${servicios}">
+			<nav aria-label="Page navigation example">
+				<ul class="pagination justify-content-center mt-3">
+
+					<li class="page-item" th:class="${servicios.isFirst()} ? 'disabled' : ''">
+						<a class="page-link"
+							th:href="@{/servicios/buscar(termino=${nombreCategoria},pagina=${paginaActual - 1})}"
+							tabindex="-1">Anterior</a>
+					</li>
+
+					<li class="page-item" th:each="numero : ${#numbers.sequence(0, totalPaginas-1)}"
+						th:class="${numero == paginaActual-1} ? 'active' : ''">
+						<a class="page-link"
+							th:href="@{/servicios/buscar(termino=${nombreCategoria},pagina=${numero+1})}"
+							th:text="${numero+1}"></a>
+					</li>
+
+					<li class="page-item" th:class="${servicios.isLast()} ? 'disabled' : ''">
+						<a class="page-link"
+							th:href="@{/servicios/buscar(termino=${nombreCategoria},pagina=${paginaActual + 1})}">Siguiente</a>
+					</li>
+
+				</ul>
+			</nav>
+		</div>
+		<!--Paginación -->
+
+		<!-- Modal (es para las cards de servicios filtrados y obtenidos con el search)-->
+		<div class="modal fade" id="agendarServicio" tabindex="-1" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Agendar Servicio </h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+						</button>
+					</div>
+
+					<div class="modal-body">
+						<form id="form-agendar-servicio" class="row g-3" th:action="@{/servicio/agendar/cita}"
+							method="post">
+
+							<div class="col-6">
+								<label for="inputServicioId" class="form-label">Id Servicio</label>
+								<input type="number" class="form-control" name="servicioId" readonly>
+							</div>
+
+							<div class="col-6">
+								<label for="inputServicioNombre" class="form-label">Nombre Servicio</label>
+								<input type="text" class="form-control" name="servicioNombre" readonly>
+							</div>
+
+							<div class="col-6">
+								<label for="inputProveedorNombre" class="form-label">Proveedor</label>
+								<input type="text" class="form-control" name="servicioProveedor" readonly>
+							</div>
+
+							<div class="col-6">
+								<label for="inputProveedorMovil" class="form-label">Tel-Movil</label>
+								<input type="text" class="form-control" name="servicioProveedorMovil" readonly>
+							</div>
+							
+							<div class="col-6">
+								<label for="inputProveedorMovil" class="form-label">Disponbilidad</label>
+								<input type="text" class="form-control" name="servicioProveedorTurno" readonly>
+							</div>
+							
+							<div class="col-6">
+								<label for="inputProveedorMovil" class="form-label">Tipo-Atención</label>
+								<input type="text" class="form-control" name="servicioProveedorTipoAtencion" readonly>
+							</div>
+
+							<div class="col-md-6">
+								<label for="fechaCita" class="form-label">Fecha</label>
+								<input type="date" class="form-control" name="fecha" required>
+							</div>
+
+							<div class="col-md-6">
+								<label for="HoraCita" class="form-label">Hora</label>
+								<input type="time" class="form-control" name="hora" required>
+							</div>
+
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="submit" form="form-agendar-servicio" class="btn btn-primary">Agendar</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<!--Fin Modal -->
+		<script>
+			const linksAgendaServicio = document.querySelectorAll('.link-agendar');
+
+			linksAgendaServicio.forEach(link => {
+				link.addEventListener('click', event => {
+					event.preventDefault();
+
+					// Obtener el valor del atributo "data-id-cita" del enlace
+					const idServicio = link.getAttribute('data-servicio-id');
+					console.log(idServicio);
+					// Construir la URL del método "/servicio/agendar" con el ID de la cita
+					const url = '/servicio/agendar?idServicio=' + idServicio;
+					console.log(url); // imprime la URL en la consola para verificar que sea correcta
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							console.log(data);
+							console.log(data.id);
+							console.log(data.servicio);
+							console.log(data.turno);
+							document.querySelector('#form-agendar-servicio input[name="servicioId"]').value = data.id;
+							document.querySelector('#form-agendar-servicio input[name="servicioNombre"]').value = data.servicio;
+							document.querySelector('#form-agendar-servicio input[name="servicioProveedor"]').value = data.proveedor;
+							document.querySelector('#form-agendar-servicio input[name="servicioProveedorMovil"]').value = data.movil;
+							document.querySelector('#form-agendar-servicio input[name="servicioProveedorTurno"]').value = data.turno;
+							document.querySelector('#form-agendar-servicio input[name="servicioProveedorTipoAtencion"]').value = data.tipoAtencion;
+							
+						})
+				});
+			});
+		</script>
+	</div>
+
+</body>
+
+</html>

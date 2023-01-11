@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="/dashboard1:: head_dashboard">
+</head>
+
+<body>
+	<br>
+	<div class="container" th:fragment="contenido">
+		<div class="row justify-content-center align-items-center">
+			<div class="col-md-6 col-md-offset-3 col-md-6 col-md-offset-3 border border-info bg-white p-5 rounded-5 shadow-lg"
+				style="width: 45rem">
+				<div th:if=${param.exito}>
+					<div class="alert alert-info text-center">Ha modificado sus datos exitosamente</div>
+				</div>
+
+				<div th:if=${param.error}>
+					<div class="alert alert-danger text-center">Error el usuario ya existe</div>
+				</div>
+
+				<h1 class="text-primary text-center ">GESTIONA TU DATOS</h1>
+				<form th:action="@{/usuarioUpdate}" th:object="${usuario}" method="post">
+					<fieldset class="row g-3 mt-3">
+						<legend class="text-primary fw-bold">Datos personales</legend>
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">DNI</span>
+								<input type="text" aria-label="dni" class="form-control" id="dni" maxlength="11"
+									th:field="*{dni}" required>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Nombre</span>
+								<input type="text" aria-label="First name" class="form-control" id="nombre"
+									th:field="*{nombre}" required>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Apellido</span>
+								<input type="text" aria-label="Last name" class="form-control" id="apellido"
+									th:field="*{apellido}" required>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">E-mail@</span>
+								<input type="email" aria-label="email" class="form-control" id="email"
+									th:field="*{email}" required>
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="input-group">
+								<span class="input-group-text">Dirección</span>
+								<input type="text" aria-label="direccion" class="form-control" id="direccion"
+									th:field="*{direccion}" required>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Tel. Móvil</span>
+								<input type="text" aria-label="movil" class="form-control" id="movil" maxlength="9"
+									th:field="*{movil}" required>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Cod. Postal</span>
+								<input type="text" aria-label="codigo-postal" class="form-control" id="codigo-postal"
+									maxlength="5" th:field="*{cod_postal}" required>
+							</div>
+						</div>
+
+
+					</fieldset>
+
+					<fieldset class="row g-3 mt-3" th:object="${proveedor}">
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Especialidad</span>
+								<input type="text" aria-label="especialidad" class="form-control" id="especialidad"
+									th:field="*{especialidad}" required>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Años Experiencia</span>
+								<input type="number" aria-label="anio_experiencia" class="form-control"
+									id="anio_experiencia" th:field="*{anio_experiencia}" required>
+							</div>
+						</div>
+					</fieldset>
+
+					<fieldset class="row g-3 mt-3" th:object="${servicioOfrecido}">
+						<legend class="text-primary fw-bold">Datos del Servicio</legend>
+						<!--<div class="col-md-8">
+							<div class="input-group">
+								<span class="input-group-text">Servicio</span>
+								<input type="text" aria-label="profesion" class="form-control" id="profesion"
+									th:field="*{categoriaServicio.nombre}" readonly>
+							</div>
+						</div>-->
+						<div class="col-md-8">
+							<div class="input-group">
+								<span class="input-group-text">Servicio</span>
+								<select class="form-select" aria-label="Default select example" id="categoriaServicio"
+									name="categoriaServicioId">
+									<option th:each="categoria : ${categorias}" th:value="${categoria.id}"
+										th:text="${categoria.nombre}" 
+										th:selected="${categoria.id == servicioOfrecido.categoriaServicio.id}">
+									</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="col-md-4">
+							<div class="input-group">
+								<span class="input-group-text">Precio</span>
+								<input type="text" aria-label="precio" class="form-control" id="precio"
+									th:field="*{precio}" required>
+							</div>
+						</div>
+						
+						<div class="form-floating">
+							<textarea class="form-control" id="floatingTextarea" th:field="*{descripcion}"></textarea>
+							<label for="floatingTextarea">Breve Descripción</label>
+						</div>
+					</fieldset>
+					
+					<fieldset class="row g-3 mt-3">
+							<legend class="text-primary fw-bold">
+								Datos de disponibilidad
+							</legend>
+							<div class="col-md-6">
+								<label class="form-label text-primary fw-bold">Turnos</label>
+						
+								<div th:each="turno : ${turnos}" class="form-check">
+									<input class="form-check-input" type="radio" name="turno" th:value="${turno}" 
+										th:checked="${turno == turnoActual}"/>
+									<label class="form-check-label" th:text="${turno}"></label>
+								</div>
+							</div>
+						
+							<div class="col-md-4">
+								<label class="form-label text-primary fw-bold">Tipo/Servicio</label>
+						
+								<div th:each="tipoServicio : ${tiposServicio}" class="form-check">
+									<input class="form-check-input" type="checkbox" name="tipoServicio" th:value="${tipoServicio}" 
+										th:checked="${tipoServicioActual.contains(tipoServicio)}"/>
+									<label class="form-check-label" th:text="${tipoServicio}"></label>
+								</div>
+							</div>
+						</fieldset>
+
+					<fieldset class="row g-3 mt-3">
+						<!--si el usuario es solo proveedor-->
+						<span class="text-primary fw-bold">¿Quieres solicitar un Servicio?</span>
+						<div class="form-check mx-2">
+							<input class="form-check-input" type="checkbox" name="mi-checkbox-proveedor"
+								value="apruebaCambioClie" id="flexCheckDefault" />
+							<label class="form-check-label" for="flexCheckDefault">
+								Marca aquí!
+							</label>
+						</div>
+					</fieldset>
+
+					<div class="form-group mt-4">
+						<button type="submit" class="btn btn-primary">Enviar</button>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>

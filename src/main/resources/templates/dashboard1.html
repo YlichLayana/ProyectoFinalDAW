@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head_dashboard">
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<!-- Bootstrap 5.2.2-->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!--fontawesome5 w3schools-->
+	<script src="https://kit.fontawesome.com/0aeea58bf7.js" crossorigin="anonymous"></script>
+
+	<!-- Styles -->
+	<!--<base href="/"> Con esta estiqueta base corrijo todo la referencia de estilo evitando que estos se pierdan-->
+	<link rel="stylesheet" href="/css/stylesDashboard1.css" />
+	<title>Dashboard - Schedule Services</title>
+</head>
+
+<body>
+	<div class="d-flex" id="wrapper">
+
+		<!-- Sidebar -->
+		<div class="bg-white" id="sidebar-wrapper">
+			
+			<div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom"><i
+					class="fas fa-calendar-check me-2"></i>
+				Schedule Services
+			</div>
+			<div class="list-group list-group-flush my-3">
+				<a th:href="@{/dashboardPage}"
+					class="list-group-item list-group-item-action bg-transparent second-text active"><i
+						class="fas fa-tachometer-alt me-2"></i>Dashboard <span
+						sec:authentication="principal.authorities">Roles</span>
+				</a>
+				<div sec:authorize="hasAnyAuthority('CLIENTE', 'PROVEEDOR')">
+					
+					<a th:href="@{/dashboard/datosCuentaUsuario}"
+						class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+							class="fas fa-address-card me-2"></i>Mis Datos de Perfil</a>
+				</div>
+				<div sec:authorize="hasAnyAuthority('CLIENTE')">
+					<a th:href="@{/citas/agendadas}"
+						class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+							class="far fa-calendar-alt me-2"></i>Mis Citas Personales</a>
+				</div>
+				<div sec:authorize="hasAnyAuthority('PROVEEDOR')">
+					<a th:href="@{/citas/gestionar}"
+						class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+							class="fas fa-tasks me-2"></i>Gestionar Citas de Clientes</a>
+							
+					<a th:href="@{/citas/completadas}" 
+						class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+							class="fas fa-history me-2"></i>Historico Citas Atendidas</a>
+							
+					<a th:href="@{/citas/canceladas}" 
+						class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+							class="far fa-calendar-times me-2"></i>Citas Canceladas</a>
+					
+				</div>
+				<div class="list-group-item list-group-item-action bg-transparent text-danger fw-bold">
+					<form th:action="@{/logout}" method="post">
+						<i class="fas fa-power-off me-2"></i>
+						<input type="submit" value="Cerrar Sesion"
+							class="border-0 bg-transparent text-danger fw-bold" />
+					</form>
+				</div>
+			</div>
+			
+		</div>
+		<!-- /#sidebar-wrapper -->
+
+		<!-- Page Content-wrapper-->
+		<div id="page-content-wrapper">
+
+			<!--Nav-Menu-->
+			<nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
+				<div class="d-flex align-items-center">
+					<i class="fas fa-align-left primary-text fs-4 me-3" id="menu-toggle"></i>
+					<h2 class="fs-2 m-0">Dashboard</h2>
+				</div>
+
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+					data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+					aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<!--Este es el buscador de servicio-->
+				<div class="d-flex align-items-center mx-5" sec:authorize="hasAnyAuthority('CLIENTE')">
+					<form class="d-flex" role="search" th:action="@{/servicios/buscar}" th:method="get">
+						<input class="form-control me-2" type="search" placeholder="Search Servicio" aria-label="Search"
+							id="termino" name="termino" required>
+						<button class="btn btn-outline-primary" type="submit">Buscar</button>
+					</form>
+				</div>
+				<!--hasta aqui el buscador de servicio-->
+
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle dark-text fw-bold" href="#" id="navbarDropdown"
+								role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<i class="fas fa-user me-2"></i><span
+									sec:authentication="principal.fullName">Fullname</span>
+							</a>
+
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+								<li><a class="dropdown-item" th:href="@{/dashboard/datosCuentaUsuario}">Perfil</a></li>
+								<form th:action="@{/logout}" method="post">
+									<li><input type="submit" value="Cerrar Sesion" class="dropdown-item" /></li>
+								</form>
+							</ul>
+
+						</li>
+					</ul>
+				</div>
+			</nav>
+			<!--Fin Nav-Menu-->
+
+			<!--Área container-fluid px-4-->
+			<div class="container-fluid px-4">
+
+				<!--Área de contenido que cambio dinamico-->
+				<div class="row g-3 my-2" th:fragment="contenido">
+					<div th:replace="${view} :: contenido"></div>
+				</div>
+				<!--Fin Área de contenido que cambia-->
+			</div>
+			<!--Fin Área container-fluid px-4-->
+
+
+		</div>
+		<!-- /#page-content-wrapper -->
+
+	</div>
+
+
+	<script>
+		var el = document.getElementById("wrapper");
+		var toggleButton = document.getElementById("menu-toggle");
+
+		toggleButton.onclick = function () {
+			el.classList.toggle("toggled");
+		};
+	</script>
+	
+	
+	
+</body>
+
+</html>

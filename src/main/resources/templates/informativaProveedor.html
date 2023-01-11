@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="/dashboard1:: head_dashboard"></head>
+
+<body>
+	<div th:fragment="contenido">
+
+		<div class="row justify-content-center align-items-center">
+
+				
+					<!--Área card informativa para proveedores-->
+					<div class="row g-3 my-2">
+						<div class="col-md-3">
+							<div
+								class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
+								<div>
+									<h3 class="fs-2">[[${citasTotalPendientes}]]</h3>
+									<p class="fs-5">Citas Solicitadas</p>
+								</div>
+								<a th:href="@{/citas/gestionar}"><i
+										class="fas fa-chart-line fs-1 primary-text border rounded-full secondary-bg p-3 btn btn-outline-primary"></i></a>
+							</div>
+						</div>
+						
+						<div class="col-md-3">
+							<div
+								class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
+								<div>
+									<h3 class="fs-2">[[${citasTotalProcesadas}]]</h3>
+									<p class="fs-5">Citas Procesadas</p>
+								</div>
+								<a th:href="@{/citas/gestionar}"><i
+										class="far fa-calendar-check fs-1 primary-text border rounded-full secondary-bg p-3 btn btn-outline-primary"></i></a>
+							</div>
+						</div>
+
+						<div class="col-md-3">
+							<div
+								class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
+								<div>
+									<h3 class="fs-2">[[${citasAtendidas}]]</h3>
+									<p class="fs-5">Citas Completadas</p>
+								</div>
+								<a th:href="@{/citas/completadas}"><i
+										class="fas fa-tasks fs-1 primary-text border rounded-full secondary-bg p-3 btn btn-outline-primary"></i></a>
+							</div>
+						</div>
+
+						<div class="col-md-3">
+							<div
+								class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
+								<div>
+									<h3 class="fs-2">€[[${totalRecaudado}]]</h3>
+									<p class="fs-5">Total Recaudado</p>
+								</div>
+								<i class="fas fa-wallet fs-1 primary-text border rounded-full secondary-bg p-3"></i>
+							</div>
+						</div>
+					</div>
+					<!--Fin Área card informativa para proveedores-->
+
+				
+		
+		</div>
+	</div>
+</body>
+
+</html>

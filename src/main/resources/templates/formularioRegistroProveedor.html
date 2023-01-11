@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="/index:: head"> </head>
+
+<body>
+	<header th:insert="/index :: header"></header>
+
+	<div class="container">
+		<div class="row justify-content-center align-items-center">
+			<div class="col-md-6 col-md-offset-3 border border-info bg-white p-5 rounded-5 shadow-lg"
+				style="width: 50rem">
+				<div th:if="${param.exito}">
+					<div class="alert alert-info text-center">
+						Se ha registrado exitosamente a la aplicación
+					</div>
+				</div>
+
+				<h1 class="text-primary text-center">REGÍSTRO DE PROVEEDOR</h1>
+				<!--Para tabla user-->
+				<form th:action="@{/proceso_registroProveedor}" th:object="${usuario}" method="post">
+					<fieldset class="row g-3 mt-3">
+						<legend class="text-primary fw-bold">Datos personales</legend>
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">DNI</span>
+								<input type="text" aria-label="dni" class="form-control" id="dni" maxlength="11"
+									th:field="*{dni}" required />
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Nombre</span>
+								<input type="text" aria-label="First name" class="form-control" id="nombre"
+									th:field="*{nombre}" required />
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Apellido</span>
+								<input type="text" aria-label="Last name" class="form-control" id="apellido"
+									th:field="*{apellido}" required />
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Tel. Móvil</span>
+								<input type="text" aria-label="movil" class="form-control" id="movil" maxlength="9"
+									th:field="*{movil}" required />
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Dirección</span>
+								<input type="text" aria-label="direccion" class="form-control" id="direccion"
+									th:field="*{direccion}" required />
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Cod. Postal</span>
+								<input type="text" aria-label="codigo-postal" class="form-control" id="codigo-postal"
+									maxlength="5" th:field="*{cod_postal}" required />
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">E-mail@</span>
+								<input type="email" aria-label="email" class="form-control" id="email"
+									th:field="*{email}" required />
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-text">Password</span>
+								<input type="password" aria-label="password" class="form-control" id="password"
+									th:field="*{password}" required />
+							</div>
+						</div>
+
+						<!--Para tabla proveedor-->
+						<section th:object="${proveedor}" class="row g-2">
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-text">Especialidad</span>
+									<input type="text" aria-label="especialidad" class="form-control" id="especialidad"
+										th:field="*{especialidad}" required />
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-text">Años Experiencia</span>
+									<input type="number" aria-label="anio_experiencia" class="form-control"
+										id="anio_experiencia" th:field="*{anio_experiencia}" required />
+								</div>
+							</div>
+						</section>
+					</fieldset>
+
+					<!--Para tabla servicio ofrecido-->
+					<fieldset class="row g-3 mt-3" th:object="${servicioOfrecido}">
+						<legend class="text-primary fw-bold">Datos del Servicio</legend>
+						<div class="col-md-8">
+							<div class="input-group">
+								<span class="input-group-text">Servicio</span>
+								
+								<select class="form-select" aria-label="Default select example" id="categoriaServicio"
+									name="categoriaServicioId">
+									<option selected>Selecciona un tipo de servicio</option>
+									<option th:each="categoria : ${categorias}" th:value="${categoria.id}"
+										th:text="${categoria.nombre}"></option>
+								</select>
+							</div>
+						</div>
+
+						<div class="col-md-4">
+							<div class="input-group">
+								<span class="input-group-text">Precio</span>
+								<input type="text" aria-label="precio" class="form-control" id="precio"
+									th:field="*{precio}" required />
+							</div>
+						</div>
+
+						<div class="form-floating">
+							<textarea class="form-control" id="floatingTextarea" th:field="*{descripcion}"></textarea>
+							<label for="floatingTextarea">Breve Descripción</label>
+						</div>
+					</fieldset>
+
+					<fieldset class="row g-3 mt-3">
+						<legend class="text-primary fw-bold">
+							Datos de disponibilidad
+						</legend>
+						
+
+						<div class="col-md-6">
+							<label class="form-label text-primary fw-bold">Turnos</label>
+							
+							<div th:each="turno : ${turnos}" class="form-check">
+								<input class="form-check-input" type="radio" name="turno" th:value="${turno}" required />
+								<label class="form-check-label" th:text="${turno}"></label>
+							</div>
+						</div>
+
+						<div class="col-md-4">
+							<label class="form-label text-primary fw-bold">Tipo/Servicio</label>
+							
+							<div th:each="tipoServicio : ${tiposServicio}" class="form-check">
+							    <input class="form-check-input" type="checkbox" name="tipoServicio" th:value="${tipoServicio}" />
+							    <label class="form-check-label" th:text="${tipoServicio}"></label>
+							</div>
+						</div>
+					</fieldset>
+					<div class="form-group mt-4">
+						<button type="submit" class="btn btn-primary">Enviar</button>
+						<span class="mx-5">¿Si ya estas registrado?
+							<a class="text-decoration-none text-primary fw-semibold" th:href="@{/login}">inicia sesión
+								aqui</a>
+						</span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Latest compiled and minified JavaScript (para el boton del nav-bar de la pagina inicial) -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous">
+	</script>
+	
+</body>
+
+</html>

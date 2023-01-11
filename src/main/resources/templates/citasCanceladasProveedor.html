@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="/dashboard1:: head_dashboard"></head>
+
+<body>
+	<div th:fragment="contenido">
+
+		<div class="row justify-content-center align-items-center">
+		
+			<div th:if="${messageCitas}" class="alert alert-warning text-center" role="alert" style="width: 35rem">
+				<p th:text="${messageCitas}"></p>
+			</div>
+			
+			<div class="card border border-info mb-3  rounded-3" style="width: 75rem">
+				<div class="card-header text-center">
+					<h3 class="text-primary">CITAS CANCELADAS POR CLIENTES </h3>
+				</div>
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-striped table-hover">
+							<thead class="table-info">
+								<tr class="text-primary">
+									<th scope="col">ID</th>
+									<th scope="col">FECHA</th>
+									<th scope="col">HORA</th>
+									<th scope="col">CLIENTE</th>
+									<th scope="col">MÓVIL</th>
+									<th scope="col">DIRECCION</th>
+									<th scope="col">ESTADO / CITA</th>
+								</tr>
+							</thead>
+							<tbody class="table-group-divider">	
+								<tr th:each="cita : ${citasCanceladas}">
+									<th class="text-primary fs-6" scope="row" th:text="${cita.getId()}"></th>
+									<td class="fs-6" th:text="${cita.getFecha()}"></td>
+									<td class="fs-6" th:text="${cita.getHora()}"></td>
+									<td class="fs-6" th:text="${cita.getUsuario().getNombre()}"></td>
+									<td class="fs-6" th:text="${cita.getUsuario().getMovil()}"></td>
+									<td class="fs-6" th:text="${cita.getUsuario().getDireccion()}"></td>
+									<td>
+										<div th:class="${cita.getEstado() == 'CANCELADA' ? 'p-2 bg-danger bg-opacity-10 border border-danger rounded text-center' : ''}">
+										    [[${cita.getEstado()}]]
+										</div>
+									</td>	
+								</tr>	
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
